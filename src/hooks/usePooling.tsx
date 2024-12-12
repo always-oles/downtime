@@ -6,6 +6,7 @@ function usePooling() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Fetch downtime expiration date from server
     const fetchTimeFromServer = async () => {
       const response = await fetch('http://localhost:3000/api/timer');
       if (!response.ok) {
@@ -18,6 +19,7 @@ function usePooling() {
 
     fetchTimeFromServer();
 
+    // Fetch status (502 or 200 from another endpoint)
     const fetchStatusFromServer = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/status');

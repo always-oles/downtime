@@ -30,7 +30,7 @@ function Timer() {
 
         // REDIRECT
         redirect();
-        
+
         clearInterval(interval);
       }
     };
