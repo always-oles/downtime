@@ -51,7 +51,10 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         {isLoading 
           ? <p>Loading...</p> 
-          : isTimerVisible && <Timer description="Server is down, estimated wait time is " finishTime={downtimeExpiresAt} /> 
+          : isTimerVisible && <Timer description="Server is down, estimated wait time is " 
+                                     finishTime={downtimeExpiresAt} 
+                                     updateInterval={60000}
+                              /> 
         }
       </main>
     </div>

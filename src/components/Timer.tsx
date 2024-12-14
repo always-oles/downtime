@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Timer({ finishTime, description }: { finishTime: Date, description: string }) {
+function Timer({ finishTime, description, updateInterval }: { finishTime: Date, description: string, updateInterval: number }) {
   const [isVisible, setIsVisible] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   
@@ -18,7 +18,7 @@ function Timer({ finishTime, description }: { finishTime: Date, description: str
     };
 
     // TODO: UNCOMMENT LATER TO UPDATE EVERY MINUTE NOT EVERY SECOND
-    const interval = setInterval(updateCountdown, 60000);
+    const interval = setInterval(updateCountdown, updateInterval);
 
     // Initial call to set the time difference
     updateCountdown();
