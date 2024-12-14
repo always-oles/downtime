@@ -29,14 +29,12 @@ function Timer({ finishTime, description, updateInterval }: { finishTime: Date, 
 
   return (
     isVisible && <div>
-      <span>
-        {description}
+      {description}
 
-        { (minutes > 0) 
-          ? minutes +  ' minute' + ((minutes > 1) ? 's' : '') 
-          : 'less than a minute left'
-        }
-      </span>
+      { (minutes > 0) 
+        ? minutes +  ' minute' + ((minutes > 1) ? 's' : '') 
+        : 'less than a minute left'
+      }
     </div>
   );
 }
