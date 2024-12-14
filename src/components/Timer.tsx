@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function Timer({ finishTime, description, updateInterval }: { finishTime: Date, description: string, updateInterval: number }) {
+function Timer({ finishTime, description, updateInterval = 1000 }: { finishTime: Date, description: string, updateInterval: number }) {
   const [isVisible, setIsVisible] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   
