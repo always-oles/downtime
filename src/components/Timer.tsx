@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-function Timer({ finish, description }: { finish: Date, description: string }) {
+function Timer({ finishTime, description }: { finishTime: Date, description: string }) {
   const [isVisible, setIsVisible] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   
   useEffect(() => {
     const updateCountdown = () => {
-      const futureTime = new Date(finish).getTime();
+      const futureTime = new Date(finishTime).getTime();
       const difference = futureTime - new Date().getTime();
       setTimeLeft(difference);
 
@@ -24,7 +24,7 @@ function Timer({ finish, description }: { finish: Date, description: string }) {
     updateCountdown();
 
     return () => clearInterval(interval);
-  }, [finish]);
+  }, [finishTime]);
 
   const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
 
