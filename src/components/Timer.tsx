@@ -1,68 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import usePooling from "@/hooks/usePooling";
-import { redirect } from '@/common';
 
-function Timer() {
-  const { downtimeExpiresAt, isLoading } = usePooling();
-  const [timeDifference, setTimeDifference] = useState<number | null>(null);
-  const [isTimerVisible, setIsTimerVisible] = useState(true);
-
+function Timer({ finish, description }: { finish: Date, description: string }) {
+  const [isVisible, setIsVisible] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(0);
+  
   useEffect(() => {
-    if (!downtimeExpiresAt) return;
-
-    const updateTimeDifference = () => {
-      const now = new Date();
-      const futureTime = new Date(downtimeExpiresAt).getTime();
-      const diff = futureTime - now.getTime();
-      setTimeDifference(diff);
-      const hours = Math.floor(diff / 1000 / 60 / 60);
-
-      // 1 hour or more
-      if (hours >= 1) {
-        // hide timer
-        setIsTimerVisible(false);
-      }
+    const updateCountdown = () => {
+      const futureTime = new Date(finish).getTime();
+      const difference = futureTime - new Date().getTime();
+      setTimeLeft(difference);
 
       // Timer expired
-      if (diff <= 0) {
+      if (difference <= 0) {
         // hide timer
-        setIsTimerVisible(false);
-
-        // REDIRECT
-        redirect();
-
-        clearInterval(interval);
+        setIsVisible(false);
       }
     };
 
     // TODO: UNCOMMENT LATER TO UPDATE EVERY MINUTE NOT EVERY SECOND
-    // const interval = setInterval(updateTimeDifference, 60 * 1000);
-    const interval = setInterval(updateTimeDifference, 1000);
+    const interval = setInterval(updateCountdown, 60000);
 
     // Initial call to set the time difference
-    updateTimeDifference();
+    updateCountdown();
 
     return () => clearInterval(interval);
-  }, [downtimeExpiresAt]);
+  }, [finish]);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (timeDifference === null) return <p>No server time received.</p>;
-
-  // Convert milliseconds to hours, minutes, seconds
-  const seconds = Math.floor((timeDifference / 1000) % 60);
-  const minutes = Math.floor((timeDifference / 1000 / 60) % 60);
+  const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
 
   return (
-    !isLoading && isTimerVisible && <div>
+    isVisible && <div>
       <span>
-        Server is down, estimated wait time:{' '}
+        {description}
 
         { (minutes > 0) 
           ? minutes +  ' minute' + ((minutes > 1) ? 's' : '') 
           : 'less than a minute left'
-        }<br/>
-        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-        <br/><h4 className='text-xs'>(Seconds are for testing purposes only)</h4>
+        }
       </span>
     </div>
   );

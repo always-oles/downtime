@@ -1,51 +1,51 @@
 import { useState, useEffect } from 'react';
-import { redirect } from '@/common';
 
-function usePooling() {
-  const [downtimeExpiresAt, setDowntimeExpiresAt] = useState<Date | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+type ReturnType = {
+  data: unknown
+  error: boolean
+  loading: boolean
+}
+
+const usePooling = (
+  apiCall: () => Promise<T>,
+  interval: number = 120000,
+): ReturnType => {
+  const [data, setData] = useState<null>(null)
+  const [error, setError] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    // Fetch downtime expiration date from server
-    const fetchTimeFromServer = async () => {
-      const response = await fetch('http://localhost:3000/api/timer');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const { downtimeExpiration } = await response.json();
-      setDowntimeExpiresAt(new Date(downtimeExpiration));
-      setIsLoading(false);
-    };
+    let isMounted = true // Prevent state updates on unmounted components
 
-    fetchTimeFromServer();
+    const fetchData = async (): Promise<void> => {
+      setLoading(true)
+      setError(false)
 
-    // Fetch status (502 or 200 from another endpoint)
-    const fetchStatusFromServer = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/status');
-        if (response.status === 502) {
-          // server is down
-        } else if (response.status === 200) {
-          // REDIRECT
-          redirect();
+        const response = await apiCall()
+        if (isMounted) {
+          setData(response)
+          setError(false)
         }
       } catch (err) {
-        console.error(err);
+        if (isMounted) setError(true)
+      } finally {
+        if (isMounted) setLoading(false)
       }
-    };
-      
-    fetchStatusFromServer();
+    }
 
-    // Set interval to fetch server time every minute
-    // TODO: UNCOMMENT LATER
-    // const interval = setInterval(fetchStatusFromServer, 60 * 1000);
-    const interval = setInterval(fetchStatusFromServer, 5 * 1000);
+    fetchData() // Make an initial call
 
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
-  }, []);
+    const intervalId = setInterval(fetchData, interval)
 
-  return { downtimeExpiresAt, isLoading };
+    return () => {
+      isMounted = false
+      clearInterval(intervalId) // Cleanup the interval on unmount
+    }
+  }, [apiCall, interval])
+
+  return { data, error, loading }
 }
+
 
 export default usePooling;
