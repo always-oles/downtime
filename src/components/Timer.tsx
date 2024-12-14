@@ -17,7 +17,6 @@ function Timer({ finishTime, description, updateInterval }: { finishTime: Date, 
       }
     };
 
-    // TODO: UNCOMMENT LATER TO UPDATE EVERY MINUTE NOT EVERY SECOND
     const interval = setInterval(updateCountdown, updateInterval);
 
     // Initial call to set the time difference
